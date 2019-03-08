@@ -1,5 +1,13 @@
+import pandas as pd
+import math
+import time
 import torch
+import random
+import os
+
+from dataloading import *
 from model import *
+from utils import *
 
 def train(model, inputs, targets, optimizer, criterion, computing_device, config):
     model.train()
@@ -71,7 +79,7 @@ def init_seq2seq(config, computing_device):
     model = model.to(computing_device)
     return model
 
-def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512):
+def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, data_dir='data/numerical_data_set_simple_torch'):
     print('...loading data')
     if test_type != 'A':
         init='A'
@@ -97,9 +105,6 @@ def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512):
                 inputs=torch.cat([inputs,src],dim=1)
                 targets=torch.cat([targets,trg],dim=1)
     
-    print(inputs.size())
-    print(targets.size())
-    
     #shuffle indices
     indices = list(range(targets.size()[1]))
 
@@ -107,10 +112,7 @@ def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512):
     
     inputs = inputs[:,indices,:]
     targets = targets[:,indices,:]
-    
-    print(inputs.size())
-    print(targets.size())
-    
+
     # chunk
     n_chunks = math.ceil(inputs.size()[1]/BATCH_SIZE)
     inputs = torch.chunk(inputs, n_chunks, dim=1) 
@@ -126,7 +128,7 @@ def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512):
     
     return train_inputs, train_targets, val_inputs, val_targets
     
-def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512):
+def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/numerical_data_set_simple_torch'):
     filename=filenames_by_type[test_type][0]
     q = torch.load(os.path.join(data_dir,filename))
     inputs,targets = q[0],q[1]

@@ -20,6 +20,10 @@ for file in os.listdir(data_dir):
     if typ in filenames_by_type:
         filenames.append(file)
         filenames_by_type[typ].append(file)
+        
+## MODIFY JUST FOR TEST, COMMENT OUT FOR REAL RUNS ###
+for typ in filenames_by_type:
+    filenames_by_type[typ]=[filenames_by_type[typ][0]]
 
 computing_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_digits =10
@@ -51,7 +55,10 @@ config = {
         'verbose':True
     }
 
+if config['verbose']:
+    print(filenames_by_type)
  
+### K FOLD
 for test_type in test_types:
     if config['verbose']:
         print('Fold {}'.format(test_type))
@@ -62,20 +69,20 @@ for test_type in test_types:
     total_min_val_loss=100
     min_config=None
     
-    for lr in []:
-        for bs in []:
-            for wd in []:
-                for tr in []:
-                    for id in []:
-                        for hd in []:
+    for lr in [.001]:
+        for bs in [512]:
+            for wd in [0]:
+                for tr in [1.0]:
+                    for idrop in [0.0]:
+                        for hdrop in [0.0]:
                             config['batch_size']=bs
                             config['learning_rate']=lr
                             config['weight_decay']=wd
                             config['teacher_forcing_ratio']=tr
-                            config['enc']['hid_dropout']=hd
-                            config['enc']['input_dropout']=id
-                            config['dec']['hid_dropout']=hd
-                            config['dec']['input_dropout']=id
+                            config['enc']['hid_dropout']=hdrop
+                            config['enc']['input_dropout']=idrop
+                            config['dec']['hid_dropout']=hdrop
+                            config['dec']['input_dropout']=idrop
 
                             ### TRAIN AND VALIDATE ###
                             min_val_loss,min_epoch,curr_config = train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, N=5)
