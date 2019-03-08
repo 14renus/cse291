@@ -7,20 +7,20 @@ import random
 import torch.nn.functional as F
 
 class Encoder(nn.Module):
-    def __init__(self, input_dim, hid_dim, n_layers, dropout):
+    def __init__(self, input_dim, hid_dim, n_layers, hid_dropout, input_dropout):
         super().__init__()
         
         self.input_dim = input_dim
         #self.emb_dim = emb_dim
         self.hid_dim = hid_dim
         self.n_layers = n_layers
-        self.dropout = dropout
+        #self.dropout = dropout
         
         #self.embedding = nn.Embedding(input_dim, emb_dim)
         
-        self.rnn = nn.LSTM(input_dim, hid_dim, n_layers, dropout=dropout)
+        self.rnn = nn.LSTM(input_dim, hid_dim, n_layers, dropout=hid_dropout)
         
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(input_dropout)
         
     def forward(self, src):
         
@@ -34,7 +34,7 @@ class Encoder(nn.Module):
         #src = src.view(src.shape())
         #print(src.size())
         
-        outputs, (hidden, cell) = self.rnn(src)
+        outputs, (hidden, cell) = self.rnn(self.dropout(src))
         
         #outputs = [src sent len, batch size, hid dim * n directions]
         #hidden = [n layers * n directions, batch size, hid dim]
@@ -45,25 +45,25 @@ class Encoder(nn.Module):
         return hidden, cell
     
 class Decoder(nn.Module):
-    def __init__(self, output_dim, hid_dim, n_layers, dropout):
+    def __init__(self, output_dim, hid_dim, n_layers, hid_dropout, input_dropout):
         super().__init__()
 
         #self.emb_dim = emb_dim
         self.hid_dim = hid_dim
         self.output_dim = output_dim
         self.n_layers = n_layers
-        self.dropout = dropout
+        #self.dropout = dropout
         
         #self.embedding = nn.Embedding(output_dim, emb_dim)
         
-        self.rnn = nn.LSTM(output_dim, hid_dim, n_layers, dropout=dropout)
+        self.rnn = nn.LSTM(output_dim, hid_dim, n_layers, dropout=hid_dropout)
         
         self.out = nn.Linear(hid_dim, output_dim)
         
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(input_dropout)
         
         
-    def forward(self, input, hidden, cell):
+    def forward(self, src, hidden, cell):
         
         #input = [batch size]
         #hidden = [n layers * n directions, batch size, hid dim]
@@ -77,7 +77,7 @@ class Decoder(nn.Module):
         
         #print(input.size())
         
-        input = input.unsqueeze(0)
+        src = src.unsqueeze(0)
         
         #print(input.size())
         
@@ -88,8 +88,8 @@ class Decoder(nn.Module):
         #embedded = self.dropout(self.embedding(input))
         
         #embedded = [1, batch size, emb dim]
-                
-        output, (hidden, cell) = self.rnn(input, (hidden, cell))
+        src = self.dropout(src)
+        output, (hidden, cell) = self.rnn(src, (hidden, cell))
         
         #output = [sent len, batch size, hid dim * n directions]
         #hidden = [n layers * n directions, batch size, hid dim]
@@ -107,12 +107,12 @@ class Decoder(nn.Module):
         return prediction, hidden, cell
     
 class Seq2Seq(nn.Module):
-    def __init__(self, encoder, decoder):
+    def __init__(self, encoder, decoder,computing_device):
         super().__init__()
         
         self.encoder = encoder
         self.decoder = decoder
-
+        self.device = computing_device
         
         assert encoder.hid_dim == decoder.hid_dim, "Hidden dimensions of encoder and decoder must be equal!"
         assert encoder.n_layers == decoder.n_layers, "Encoder and decoder must have equal number of layers!"
@@ -142,6 +142,7 @@ class Seq2Seq(nn.Module):
             outputs[t] = output
             teacher_force = random.random() < teacher_forcing_ratio
             
+         
             # softmax + find 
             #print('size of output + pred')
             #print(output.size())
@@ -151,7 +152,7 @@ class Seq2Seq(nn.Module):
             pred_max = torch.argmax(pred_logits, dim=1)
             pred = torch.zeros(pred_logits.size())
             pred[pred_max] = 1.0
-            
+            pred = pred.to(self.device)
             #top1 = output.max(1)[1]
             
             input = (trg[t] if teacher_force else pred)
