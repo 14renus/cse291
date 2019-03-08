@@ -51,7 +51,10 @@ config = {
         'verbose':True
     }
 
+if config['verbose']:
+    print(filenames_by_type)
  
+### K FOLD
 for test_type in test_types:
     if config['verbose']:
         print('Fold {}'.format(test_type))

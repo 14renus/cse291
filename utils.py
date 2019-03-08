@@ -1,5 +1,6 @@
 import torch
 from model import *
+import os
 
 def train(model, inputs, targets, optimizer, criterion, computing_device, config):
     model.train()
@@ -71,7 +72,7 @@ def init_seq2seq(config, computing_device):
     model = model.to(computing_device)
     return model
 
-def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512):
+def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, data_dir='data/numerical_data_set_simple_torch'):
     print('...loading data')
     if test_type != 'A':
         init='A'
