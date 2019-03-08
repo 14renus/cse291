@@ -85,7 +85,7 @@ for test_type in test_types:
                             config['dec']['input_dropout']=idrop
 
                             ### TRAIN AND VALIDATE ###
-                            min_val_loss,min_epoch,curr_config = train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, N=5)
+                            min_val_loss,min_epoch,curr_config = train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, computing_device, N=5)
                             if config['verbose']:
                                 print('min val loss: {}, min epoch: {}'.format(min_val_loss,min_epoch))
                             if min_val_loss < total_min_val_loss:
