@@ -22,12 +22,12 @@ def main():
         total_min_val_loss=100
         min_config=None
 
-        for lr in [.001]:
-            for bs in [512]:
-                for wd in [0]:
-                    for tr in [1.0]:
-                        for idrop in [0.0]:
-                            for hdrop in [0.0]:
+        for lr in [.001,0.0001,0.0005, 0.01]:
+            for bs in [512,128, 256]:
+                for wd in [0, 1e-5, 2e-5, 1e-4]:
+                    for tr in [1.0, 0.7, 0.5]:
+                        for idrop in [0.0,0.2,0.4,0.6]:
+                            for hdrop in [0.0,0.2,0.4,0.6]:
                                 config['batch_size']=bs
                                 config['learning_rate']=lr
                                 config['weight_decay']=wd
