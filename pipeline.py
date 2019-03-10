@@ -102,8 +102,8 @@ if __name__== "__main__":
             filenames_by_type[typ].append(file)
 
     ## MODIFY JUST FOR TEST, COMMENT OUT FOR REAL RUNS ###
-    for typ in filenames_by_type:
-        filenames_by_type[typ]=[filenames_by_type[typ][0]]
+    ## for typ in filenames_by_type:
+    ##    filenames_by_type[typ]=[filenames_by_type[typ][0]]
 
     computing_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     n_digits =10

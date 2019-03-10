@@ -209,10 +209,12 @@ def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/num
 
 def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, computing_device, N=5):
     output_dir='hd={}_nl={}'.format(config['hidden_dim'],config['n_layers'])
+    print(output_dir)
     output_dir = os.path.join('output',output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     output_file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(config['batch_size'],config['learning_rate'],config['weight_decay'],config['teacher_forcing_ratio'],config['enc']['hid_dropout'],config['enc']['input_dropout'],test_type)
+    print(output_file)
     output_filepath = os.path.join(output_dir,output_file+'.csv')   
     
     model = init_seq2seq(config, computing_device)
