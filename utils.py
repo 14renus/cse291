@@ -254,7 +254,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             avg_train_loss/=N
             
             with open(output_filepath, 'a') as file: 
-                file.write('{},{}\n'.format(avg_val_loss,avg_train_loss,time.time()-total_start))
+                file.write('{},{},{}\n'.format(avg_val_loss,avg_train_loss,time.time()-total_start))
                 
             # update min, state_dict
             if avg_val_loss<min_val_loss:
