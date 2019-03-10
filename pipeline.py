@@ -95,6 +95,8 @@ if __name__== "__main__":
         filename, file_extension = os.path.splitext(file)
 
         typ = filename[-1]
+        if typ=='D' and 'gen' in filename:
+            continue
         if typ in filenames_by_type:
             filenames.append(file)
             filenames_by_type[typ].append(file)

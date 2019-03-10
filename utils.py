@@ -127,6 +127,65 @@ def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, dat
     val_targets = targets[i:]
     
     return train_inputs, train_targets, val_inputs, val_targets
+
+def read_data(data_dir,filename,LIM=1000):
+    df = pd.read_csv(os.path.join(data_dir,filename))
+
+    values = df['Attribute_value']
+    targets = df['Numerical_value']
+
+    lim = lim//len(filenames_by_type[typ])
+
+    inputs = prepare_data(values[lim:],padding_len=22)
+    outputs = prepare_targets(targets[lim:],padding_len=22)
+    
+    return inputs,outputs
+
+def encode_and_split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, data_dir='data/numerical_data_set_simple'):
+    print('...loading data')
+    if test_type != 'A':
+        init='A'
+    else:
+        init='B'
+    filename=filenames_by_type[init][0]
+    inputs,targets = read_data(data_dir,filename)
+
+    for typ in filenames_by_type:
+        if typ==test_type:
+            continue
+        if typ==init:
+            for filename in filenames_by_type[typ][1:]:
+                src,trg = read_data(data_dir,filename)
+                inputs=torch.cat([inputs,src],dim=1)
+                targets=torch.cat([targets,trg],dim=1)
+        else:
+            for filename in filenames_by_type[typ]:
+                src,trg = read_data(data_dir,filename)
+                inputs=torch.cat([inputs,src],dim=1)
+                targets=torch.cat([targets,trg],dim=1)
+    
+    #shuffle indices
+    indices = list(range(targets.size()[1]))
+
+    random.shuffle(indices)
+    
+    inputs = inputs[:,indices,:]
+    targets = targets[:,indices,:]
+
+    # chunk
+    n_chunks = math.ceil(inputs.size()[1]/BATCH_SIZE)
+    inputs = torch.chunk(inputs, n_chunks, dim=1) 
+    targets = torch.chunk(targets, n_chunks, dim=1) 
+    
+    # split train and val
+    i=int(train_frac*len(inputs))
+    train_inputs = inputs[:i]
+    val_inputs = inputs[i:]
+    
+    train_targets = targets[:i]
+    val_targets = targets[i:]
+    
+    return train_inputs, train_targets, val_inputs, val_targets
     
 def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/numerical_data_set_simple_torch'):
     filename=filenames_by_type[test_type][0]
