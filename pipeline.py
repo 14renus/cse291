@@ -10,14 +10,14 @@ from dataloading import *
 from model import *
 from utils import *
 
-def main():
+def main(filenames_by_type):
     ### K FOLD
     for test_type in test_types:
         if config['verbose']:
             print('Fold {}'.format(test_type))
 
         ### GET DATA ###
-        train_inputs, train_targets, val_inputs, val_targets = split_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])
+        train_inputs, train_targets, val_inputs, val_targets = encode_and_split_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])
 
         total_min_val_loss=100
         min_config=None
@@ -88,7 +88,7 @@ if __name__== "__main__":
         if arg=='--verbose=False':
             config['verbose']=False
     
-    data_dir = 'data/numerical_data_set_simple_torch'
+    data_dir = 'data/numerical_data_set_simple'
     filenames=[]
     filenames_by_type = {'A':[], 'B':[], 'C':[], 'D':[], 'E':[]}
     for file in os.listdir(data_dir):
@@ -114,5 +114,5 @@ if __name__== "__main__":
     if config['verbose']:
         print(filenames_by_type)
 
-    main()
+    main(filenames_by_type)
     
