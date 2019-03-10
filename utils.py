@@ -271,13 +271,13 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             avg_train_loss-0.0
             
     with open(os.path.join(output_dir,'final_output.txt'), 'a') as file: 
-        file.write('{},{}\n'.format(output_file,avg_val_loss)
+        file.write('{},{}\n'.format(output_file,avg_val_loss))
                 
     if best_state_dict:
-        PATH = "./output/{}_best.pt".format(output_file)
+        PATH = os.path.join(output_dir,output_file+_'best.pt') 
         torch.save(best_state_dict, PATH)
     else:
-        PATH = "./output/{}_final.pt".format(output_file)
+        PATH = os.path.join(output_dir,output_file+_'final.pt') 
         torch.save(best_state_dict, PATH)
     
     return min_val_loss, min_epoch, config
