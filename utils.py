@@ -225,17 +225,19 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
     #train_inputs, train_targets, val_inputs, val_targets = split_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])
 
     avg_val_loss=0.0
+    avg_train_loss=0.0
     min_val_loss=100
     min_epoch=0
     best_state_dict=None
     for epoch in range(config['epochs']):
+        total_start=time.time()
         # train 
         if verbose:
             print('...training')
         start=time.time()
-        loss = train(model, train_inputs, train_targets, optimizer, criterion, computing_device,config)
+        train_loss = train(model, train_inputs, train_targets, optimizer, criterion, computing_device,config)
         if verbose:
-            print('   epoch {}: train_loss:{}, time:{}'.format(epoch,loss,time.time()-start))
+            print('   epoch {}: train_loss:{}, time:{}'.format(epoch,train_loss,time.time()-start))
 
         #validate
         if verbose:
@@ -243,15 +245,17 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
         start=time.time()
         val_loss = validate(model, val_inputs, val_targets, optimizer, criterion, computing_device)
         if verbose:
-            print('   epoch {}: val_loss:{}, time:{}'.format(epoch,loss,time.time()-start))
+            print('   epoch {}: val_loss:{}, time:{}'.format(epoch,val_loss,time.time()-start))
     
         avg_val_loss+=val_loss
+        avg_train_loss+=train_loss
         
         if epoch%N==0:
             avg_val_loss/=N
+            avg_train_loss/=N
             
             with open(output_filepath, 'a') as file: 
-                file.write('{}\n'.format(avg_val_loss))
+                file.write('{},{}\n'.format(avg_val_loss,avg_train_loss,time.time()-total_start))
                 
             # update min, state_dict
             if avg_val_loss<min_val_loss:
@@ -264,6 +268,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                     PATH = "./output/{}.pt".format(output_file)
                     torch.save(best_state_dict, PATH)
                 return min_val_loss
+            avg_val=0.0
                 
     if best_state_dict:
         PATH = "./output/{}.pt".format(output_file)
