@@ -209,6 +209,7 @@ def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/num
 
 def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, computing_device, N=5):
     output_dir='hd={}_nl={}'.format(config['hidden_dim'],config['n_layers'])
+    print(output_dir)
     output_dir = os.path.join('output',output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
