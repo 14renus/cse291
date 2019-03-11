@@ -201,8 +201,9 @@ def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/num
     inputs,targets = read_data(data_dir,None,filename)
     
     for filename in filenames[1:]:
-                q = torch.load(os.path.join(data_dir,filename))
-                src,trg = q[0],q[1]
+                #q = torch.load(os.path.join(data_dir,filename))
+                #src,trg = q[0],q[1]
+                src,trg = read_data(data_dir,None,filename)
                 inputs=torch.cat([inputs,src],dim=1)
                 targets=torch.cat([targets,trg],dim=1)   
     # chunk
