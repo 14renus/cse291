@@ -255,7 +255,6 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             
             with open(output_filepath, 'a') as file: 
                 file.write('{},{},{}\n'.format(avg_val_loss,avg_train_loss,time.time()-total_start))
-                
             # update min, state_dict
             if avg_val_loss<min_val_loss:
                 min_val_loss=avg_val_loss
@@ -266,14 +265,13 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                 if best_state_dict:
                     PATH = "./output/{}.pt".format(output_file)
                     torch.save(best_state_dict, PATH)
-                return min_val_loss
+                return min_val_loss, min_epoch, config
             avg_val_loss=0.0
             avg_train_loss=0.0
             total_start=time.time()
             
     with open(os.path.join(output_dir,'final_output.txt'), 'a') as file: 
         file.write('{},{}\n'.format(output_file,avg_val_loss))
-                
     if best_state_dict:
         PATH = os.path.join(output_dir,output_file+'_best.pt') 
         torch.save(best_state_dict, PATH)

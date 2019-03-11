@@ -47,8 +47,8 @@ def main(filenames_by_type,data_dir):
         ### TEST ON BEST MODEL ###
         test_inputs, test_targets = get_test_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])  
         model = init_seq2seq(min_config, computing_device)
-        output_dir='hd={}_nl={}'.format(config['hidden_dim'],config['n_layers'])
-        file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(config['batch_size'],config['learning_rate'],config['weight_decay'],config['teacher_forcing_ratio'],config['enc']['hid_dropout'],config['enc']['input_dropout'],test_type)
+        output_dir='hd={}_nl={}'.format(min_config['hidden_dim'],min_config['n_layers'])
+        file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(min_config['batch_size'],min_config['learning_rate'],min_config['weight_decay'],min_config['teacher_forcing_ratio'],min_config['enc']['hid_dropout'],min_config['enc']['input_dropout'],test_type)
         PATH = "./output/{}/{}.pt".format(output_dir,file)
         model.load_state_dict(torch.load(PATH))
         optimizer = optim.Adam(model.parameters(), lr=min_config['learning_rate'],weight_decay=min_config['weight_decay'])
@@ -62,7 +62,7 @@ if __name__== "__main__":
     ### SET UP ###
     config = {
             'epochs':100,
-            'N_early_stop':10,
+            'N_early_stop':5,
             'batch_size':512,
             'learning_rate':0.001,
             'weight_decay':0,
