@@ -45,11 +45,13 @@ def main(filenames_by_type,data_dir):
                                     min_config=curr_config
                                     total_min_val_loss=min_val_loss
         ### TEST ON BEST MODEL ###
+        if config['verbose']:
+            print('...testing')
         test_inputs, test_targets = get_test_data(filenames_by_type,test_type, BATCH_SIZE=min_config['batch_size'],data_dir = 'data/numerical_data_set_simple')  
         model = init_seq2seq(min_config, computing_device)
         output_dir='hd={}_nl={}'.format(min_config['hidden_dim'],min_config['n_layers'])
         file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(min_config['batch_size'],min_config['learning_rate'],min_config['weight_decay'],min_config['teacher_forcing_ratio'],min_config['enc']['hid_dropout'],min_config['enc']['input_dropout'],test_type)
-        PATH = "./output/{}/{}.pt".format(output_dir,file)
+        PATH = "./output/{}/{}_best.pt".format(output_dir,file)
         model.load_state_dict(torch.load(PATH))
         optimizer = optim.Adam(model.parameters(), lr=min_config['learning_rate'],weight_decay=min_config['weight_decay'])
         criterion = nn.CrossEntropyLoss(ignore_index=output_pad_index)
