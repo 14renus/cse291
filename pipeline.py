@@ -17,7 +17,7 @@ def main(filenames_by_type,data_dir):
             print('Fold {}'.format(test_type))
 
         ### GET DATA ###
-        train_inputs, train_targets, val_inputs, val_targets = encode_and_split_data(filenames_by_type,test_type, data_dir=data_dir, BATCH_SIZE=config['batch_size'], LIM=10)
+        train_inputs, train_targets, val_inputs, val_targets = encode_and_split_data(filenames_by_type,test_type, data_dir=data_dir, BATCH_SIZE=config['batch_size'], LIM=None)
 
         total_min_val_loss=100
         min_config=None
@@ -50,8 +50,8 @@ def main(filenames_by_type,data_dir):
         test_inputs, test_targets = get_test_data(filenames_by_type,test_type, BATCH_SIZE=min_config['batch_size'],data_dir = 'data/numerical_data_set_simple')  
         model = init_seq2seq(min_config, computing_device)
         output_dir='hd={}_nl={}'.format(min_config['hidden_dim'],min_config['n_layers'])
-        file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(min_config['batch_size'],min_config['learning_rate'],min_config['weight_decay'],min_config['teacher_forcing_ratio'],min_config['enc']['hid_dropout'],min_config['enc']['input_dropout'],test_type)
-        PATH = "./output/{}/{}_best.pt".format(output_dir,file)
+        output_file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(min_config['batch_size'],min_config['learning_rate'],min_config['weight_decay'],min_config['teacher_forcing_ratio'],min_config['enc']['hid_dropout'],min_config['enc']['input_dropout'],test_type)
+        PATH = "./output/{}/{}_best.pt".format(output_dir,output_file)
         model.load_state_dict(torch.load(PATH))
         optimizer = optim.Adam(model.parameters(), lr=min_config['learning_rate'],weight_decay=min_config['weight_decay'])
         criterion = nn.CrossEntropyLoss(ignore_index=output_pad_index)
@@ -60,7 +60,7 @@ def main(filenames_by_type,data_dir):
         if config['verbose']:
             print('min test loss: {}'.format(test_loss))
         with open(os.path.join('output',output_dir,'output_test_loss.txt'), 'a') as file: 
-            file.write('Fold {},{},{}\n'.format(test_type,file,test_loss))
+            file.write('Fold {},{},{}\n'.format(test_type,output_file,test_loss))
 
 if __name__== "__main__":
     ### SET UP ###

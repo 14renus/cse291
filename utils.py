@@ -152,7 +152,10 @@ def encode_and_split_data(filenames_by_type,test_type, LIM=500,train_frac=0.75, 
         init='B'
     filename=filenames_by_type[init][0]
     
-    lim = LIM//len(filenames_by_type[init])
+    if LIM:
+        lim = LIM//len(filenames_by_type[init])
+    else:
+        lim = None
     inputs,targets = read_data(data_dir,lim,filename)
 
     for typ in filenames_by_type:
@@ -179,7 +182,7 @@ def encode_and_split_data(filenames_by_type,test_type, LIM=500,train_frac=0.75, 
     targets = targets[:,indices,:]
 
     # chunk
-    n_chunks = int(math.ceil(inputs.size()[1]/BATCH_SIZE))
+    n_chunks = int(math.ceil(1.0*inputs.size()[1]/BATCH_SIZE))
     inputs = torch.chunk(inputs, n_chunks, dim=1) 
     targets = torch.chunk(targets, n_chunks, dim=1) 
     
@@ -272,7 +275,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                 with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
                     file.write('{},{}\n'.format(output_file,min_val_loss))
                 if best_state_dict:
-                    PATH = "./output/{}.pt".format(output_file)
+                    PATH = "./output/{}_best.pt".format(output_file)
                     torch.save(best_state_dict, PATH)
                 return min_val_loss, min_epoch, config
             avg_val_loss=0.0
@@ -286,6 +289,6 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
         torch.save(best_state_dict, PATH)
     else:
         PATH = os.path.join(output_dir,output_file+'_final.pt') 
-        torch.save(best_state_dict, PATH)
+        torch.save(model.state_dict(), PATH)
     
     return min_val_loss, min_epoch, config
