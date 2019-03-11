@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 class Encoder(nn.Module):
     def __init__(self, input_dim, hid_dim, n_layers, hid_dropout, input_dropout):
-        super().__init__()
+        super(Encoder,self).__init__()
         
         self.input_dim = input_dim
         #self.emb_dim = emb_dim
@@ -46,7 +46,7 @@ class Encoder(nn.Module):
     
 class Decoder(nn.Module):
     def __init__(self, output_dim, hid_dim, n_layers, hid_dropout, input_dropout):
-        super().__init__()
+        super(Decoder,self).__init__()
 
         #self.emb_dim = emb_dim
         self.hid_dim = hid_dim
@@ -108,7 +108,7 @@ class Decoder(nn.Module):
     
 class Seq2Seq(nn.Module):
     def __init__(self, encoder, decoder,computing_device):
-        super().__init__()
+        super(Seq2Seq,self).__init__()
         
         self.encoder = encoder
         self.decoder = decoder
