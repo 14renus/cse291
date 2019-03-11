@@ -17,7 +17,7 @@ def main(filenames_by_type):
             print('Fold {}'.format(test_type))
 
         ### GET DATA ###
-        train_inputs, train_targets, val_inputs, val_targets = encode_and_split_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])
+        train_inputs, train_targets, val_inputs, val_targets = encode_and_split_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'],LIM=10)
 
         total_min_val_loss=100
         min_config=None

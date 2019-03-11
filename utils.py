@@ -228,8 +228,8 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
     min_val_loss=100
     min_epoch=0
     best_state_dict=None
+    total_start=time.time()
     for epoch in range(config['epochs']):
-        total_start=time.time()
         # train 
         if verbose:
             print('...training')
@@ -268,7 +268,8 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                     torch.save(best_state_dict, PATH)
                 return min_val_loss
             avg_val_loss=0.0
-            avg_train_loss-0.0
+            avg_train_loss=0.0
+            total_start=time.time()
             
     with open(os.path.join(output_dir,'final_output.txt'), 'a') as file: 
         file.write('{},{}\n'.format(output_file,avg_val_loss))
