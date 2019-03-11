@@ -269,6 +269,8 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                 best_state_dict = model.state_dict()
             # if not decreasing for a while
             elif epoch - min_epoch >= config['N_early_stop']:
+                with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
+                    file.write('{},{}\n'.format(output_file,min_val_loss))
                 if best_state_dict:
                     PATH = "./output/{}.pt".format(output_file)
                     torch.save(best_state_dict, PATH)
@@ -278,7 +280,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             total_start=time.time()
             
     with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
-        file.write('{},{}\n'.format(output_file,avg_val_loss))
+        file.write('{},{}\n'.format(output_file,min_val_loss))
     if best_state_dict:
         PATH = os.path.join(output_dir,output_file+'_best.pt') 
         torch.save(best_state_dict, PATH)

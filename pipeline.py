@@ -60,7 +60,7 @@ def main(filenames_by_type,data_dir):
         if config['verbose']:
             print('min test loss: {}'.format(test_loss))
         with open(os.path.join('output',output_dir,'output_test_loss.txt'), 'a') as file: 
-            file.write('Fold {},{}\n'.format(test_type,test_loss))
+            file.write('Fold {},{},{}\n'.format(test_type,file,test_loss))
 
 if __name__== "__main__":
     ### SET UP ###
