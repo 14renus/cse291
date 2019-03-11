@@ -21,13 +21,20 @@ def main(filenames_by_type,data_dir):
 
         total_min_val_loss=100
         min_config=None
-
+'''
         for lr in [.001,0.0001,0.0005, 0.01]:
             for bs in [512,128, 256]:
                 for wd in [0, 1e-5, 2e-5, 1e-4]:
                     for tr in [1.0, 0.7, 0.5]:
                         for idrop in [0.0,0.2,0.4,0.6]:
                             for hdrop in [0.0,0.2,0.4,0.6]:
+                    '''
+        for lr in [.001]:
+            for bs in [512]:
+                for wd in [0]:
+                    for tr in [1.0]:
+                        for idrop in [0.0]:
+                            for hdrop in [0.0]:
                                 config['batch_size']=bs
                                 config['learning_rate']=lr
                                 config['weight_decay']=wd
@@ -45,7 +52,7 @@ def main(filenames_by_type,data_dir):
                                     min_config=curr_config
                                     total_min_val_loss=min_val_loss
         ### TEST ON BEST MODEL ###
-        test_inputs, test_targets = get_test_data(filenames_by_type,test_type, BATCH_SIZE=config['batch_size'])  
+        test_inputs, test_targets = get_test_data(filenames_by_type,test_type, BATCH_SIZE=min_config['batch_size'])  
         model = init_seq2seq(min_config, computing_device)
         output_dir='hd={}_nl={}'.format(min_config['hidden_dim'],min_config['n_layers'])
         file = 'bs={}_lr={}_wd={}_tf={}_hd={}_id={}_fold={}'.format(min_config['batch_size'],min_config['learning_rate'],min_config['weight_decay'],min_config['teacher_forcing_ratio'],min_config['enc']['hid_dropout'],min_config['enc']['input_dropout'],test_type)
