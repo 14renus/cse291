@@ -207,7 +207,7 @@ def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/num
                 inputs=torch.cat([inputs,src],dim=1)
                 targets=torch.cat([targets,trg],dim=1)   
     # chunk
-    n_chunks = math.ceil(inputs.size()[1]/BATCH_SIZE)
+    n_chunks = int(math.ceil(inputs.size()[1]/BATCH_SIZE))
     inputs = torch.chunk(inputs, n_chunks, dim=1) 
     targets = torch.chunk(targets, n_chunks, dim=1) 
     
