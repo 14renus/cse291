@@ -134,9 +134,13 @@ def read_data(data_dir,lim,filename):
     targets = df['Numerical_value']
 
     #lim = LIM//len(filenames_by_type[typ])
-
-    inputs = prepare_data(values[lim:],padding_len=22)
-    outputs = prepare_targets(targets[lim:],padding_len=22)
+    
+    if lim:
+        inputs = prepare_data(values[:lim],padding_len=22)
+        outputs = prepare_targets(targets[:lim],padding_len=22)
+    else:
+        inputs = prepare_data(values,padding_len=22)
+        outputs = prepare_targets(targets,padding_len=22)
     
     return inputs,outputs
 
@@ -189,12 +193,14 @@ def encode_and_split_data(filenames_by_type,test_type, LIM=500,train_frac=0.75, 
     
     return train_inputs, train_targets, val_inputs, val_targets
     
-def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/numerical_data_set_simple_torch'):
-    filename=filenames_by_type[test_type][0]
-    q = torch.load(os.path.join(data_dir,filename))
-    inputs,targets = q[0],q[1]
+def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/numerical_data_set_simple'):
+    filenames = [filename for filename in filenames_by_type[test_type] if 'gen' not in filename]
+    filename=filenames[0]
+    #q = torch.load(os.path.join(data_dir,filename))
+    #inputs,targets = q[0],q[1]
+    inputs,targets = read_data(data_dir,None,filename)
     
-    for filename in filenames_by_type[test_type][1:]:
+    for filename in filenames[1:]:
                 q = torch.load(os.path.join(data_dir,filename))
                 src,trg = q[0],q[1]
                 inputs=torch.cat([inputs,src],dim=1)
@@ -249,7 +255,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
         avg_val_loss+=val_loss
         avg_train_loss+=train_loss
         
-        if epoch%N==0:
+        if epoch%N==0 and epoch!=0:
             avg_val_loss/=N
             avg_train_loss/=N
             
@@ -270,7 +276,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             avg_train_loss=0.0
             total_start=time.time()
             
-    with open(os.path.join(output_dir,'final_output.txt'), 'a') as file: 
+    with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
         file.write('{},{}\n'.format(output_file,avg_val_loss))
     if best_state_dict:
         PATH = os.path.join(output_dir,output_file+'_best.pt') 
