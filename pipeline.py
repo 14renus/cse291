@@ -71,8 +71,8 @@ if __name__== "__main__":
             'learning_rate':0.001,
             'weight_decay':0,
             'teacher_forcing_ratio':1.0,
-            'hidden_dim':512,
-            'n_layers':4, 
+            'hidden_dim':16,
+            'n_layers':2, 
             'enc': {
                 'hid_dropout':0.0,
                 'input_dropout':0.0
@@ -87,10 +87,16 @@ if __name__== "__main__":
 
             'verbose':True
         }
-    
-    for arg in sys.argv:
+
+     
+ 
+    for i,arg in enumerate(sys.argv):
         if arg=='--verbose=False':
             config['verbose']=False
+        if arg=='--hd':
+            config['hidden_dim']=int(sys.argv[i+1])
+        if arg=='--nl':
+            config['n_layers']=int(sys.argv[i+1])
     
     data_dir = 'data/numerical_data_set_simple_shortened'
     filenames=[]

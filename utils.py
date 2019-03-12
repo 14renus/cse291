@@ -105,6 +105,7 @@ def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, dat
                 targets=torch.cat([targets,trg],dim=1)
     
     #shuffle indices
+    random.seed(1)
     indices = list(range(targets.size()[1]))
 
     random.shuffle(indices)
@@ -276,7 +277,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             # if not decreasing for a while
             elif epoch - min_epoch >= config['N_early_stop']:
                 with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
-                    file.write('{},{}\n'.format(output_file,min_val_loss))
+                    file.write('{},{},{}\n'.format(output_file,min_epoch,min_val_loss))
                 if best_state_dict:
                     PATH = os.path.join(output_dir,output_file+'_best.pt') 
                     torch.save(best_state_dict, PATH)
@@ -286,7 +287,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
             total_start=time.time()
             
     with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
-        file.write('{},{}\n'.format(output_file,min_val_loss))
+        file.write('{},{},{}\n'.format(output_file,min_epoch,min_val_loss))
     if best_state_dict:
         PATH = os.path.join(output_dir,output_file+'_best.pt') 
         torch.save(best_state_dict, PATH)
