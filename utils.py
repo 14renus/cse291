@@ -79,7 +79,7 @@ def init_seq2seq(config, computing_device):
     return model
 
 def split_data(filenames_by_type,test_type, train_frac=0.75, BATCH_SIZE=512, data_dir='data/numerical_data_set_simple_torch'):
-    #print('...loading data')
+    print('...loading data')
     if test_type != 'A':
         init='A'
     else:
@@ -145,7 +145,7 @@ def read_data(data_dir,lim,filename):
     return inputs,outputs
 
 def encode_and_split_data(filenames_by_type,test_type, LIM=500,train_frac=0.75, BATCH_SIZE=512, data_dir='data/numerical_data_set_simple'):
-    #print('...loading data')
+    print('...loading data')
     if test_type != 'A':
         init='A'
     else:
@@ -278,7 +278,7 @@ def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs
                 with open(os.path.join(output_dir,'output_val_loss.txt'), 'a') as file: 
                     file.write('{},{}\n'.format(output_file,min_val_loss))
                 if best_state_dict:
-                    PATH = "./output/{}_best.pt".format(output_file)
+                    PATH = os.path.join(output_dir,output_file+'_best.pt') 
                     torch.save(best_state_dict, PATH)
                 return min_val_loss, min_epoch, config
             avg_val_loss=0.0
