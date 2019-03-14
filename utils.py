@@ -220,6 +220,26 @@ def get_test_data(filenames_by_type,test_type, BATCH_SIZE=512,data_dir='data/num
     
     return inputs, targets
 
+def get_train_data(filenames_by_type,train_type, BATCH_SIZE=512,data_dir='data/numerical_data_set_simple'):
+    filenames = filenames_by_type[train_type]
+    filename=filenames[0]
+    #q = torch.load(os.path.join(data_dir,filename))
+    #inputs,targets = q[0],q[1]
+    inputs,targets = read_data(data_dir,None,filename)
+    
+    for filename in filenames[1:]:
+                #q = torch.load(os.path.join(data_dir,filename))
+                #src,trg = q[0],q[1]
+                src,trg = read_data(data_dir,None,filename)
+                inputs=torch.cat([inputs,src],dim=1)
+                targets=torch.cat([targets,trg],dim=1)   
+    # chunk
+    n_chunks = int(math.ceil(inputs.size()[1]/BATCH_SIZE))
+    inputs = torch.chunk(inputs, n_chunks, dim=1) 
+    targets = torch.chunk(targets, n_chunks, dim=1) 
+    
+    return inputs, targets
+
 def train_and_validate(config,test_type, train_inputs, train_targets, val_inputs, val_targets, computing_device, N=5):
     output_dir='hd={}_nl={}'.format(config['hidden_dim'],config['n_layers'])
     #print(output_dir)
